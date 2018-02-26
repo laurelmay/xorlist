@@ -56,8 +56,11 @@ void destroy_list(list_t *list) {
         curr = next_link;
         idx++;
     }
+    free(list->head);
+    free(list->tail);
+    list->head = NULL;
+    list->tail = NULL;
     free(list);
-    return NULL;
 }
 
 /*
