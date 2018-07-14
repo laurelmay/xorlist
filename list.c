@@ -17,7 +17,7 @@
 /*
  * Returns the next item in the list after curr.
  */
-static node_t *next(node_t *curr, node_t *prev) {
+static node_t *list_next(node_t *curr, node_t *prev) {
     return (node_t *)((intptr_t)curr->link ^ (intptr_t)prev);
 }
 
@@ -26,7 +26,7 @@ static node_t *next(node_t *curr, node_t *prev) {
  * Creates an instance of the list allocated on the heap. The list must be
  * free()'d by the caller. Returns a pointer to the created list.
  */
-list_t *create_list() {
+list_t *list_create() {
     list_t *list = calloc(1, sizeof(list_t));
     node_t *head = malloc(sizeof(node_t));
     node_t *tail = malloc(sizeof(node_t));
@@ -45,13 +45,13 @@ list_t *create_list() {
  * Removes all items from the list and then free()'s the memory for the list
  * itself.
  */
-void destroy_list(list_t *list) {
-    node_t *curr = next(list->head, NULL);
+void list_destroy(list_t *list) {
+    node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
     size_t idx = 0;
     while (curr != list->tail) {
-        node_t *next_link = next(curr, prev);
-        delete(list, idx);
+        node_t *next_link = list_next(curr, prev);
+        list_delete(list, idx);
         prev = curr;
         curr = next_link;
         idx++;
@@ -67,7 +67,7 @@ void destroy_list(list_t *list) {
  * Adds value to list at idx. Returns true if the item was successfully added
  * to the list; returns false otherwise.
  */
-bool add(list_t *list, size_t idx, list_val_t value) {
+bool list_add(list_t *list, size_t idx, list_val_t value) {
     /* Allocate memory for the new node */
     if (idx > list->size)
         printf("%ld > %ld\n", idx, list->size);
@@ -77,11 +77,11 @@ bool add(list_t *list, size_t idx, list_val_t value) {
         return false;
     new_node->value = value;
 
-    node_t *curr = next(list->head, NULL);
+    node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
 
     for (size_t i = 0; i < idx; i++) {
-        node_t *next_node = next(curr, prev);
+        node_t *next_node = list_next(curr, prev);
         prev = curr;
         curr = next_node;
     }
@@ -99,31 +99,31 @@ bool add(list_t *list, size_t idx, list_val_t value) {
  * Adds an item to the end of list. Returns true if the item was added
  * successfully; returns false otherwise.
  */
-bool append(list_t *list, list_val_t value) {
+bool list_append(list_t *list, list_val_t value) {
     /* TODO: An optimization for additions to the end of the list */
-    return add(list, list->size, value);
+    return list_add(list, list->size, value);
 }
 
 /* 
  * Adds an item to the beginning of list. Returns true if the item was added
  * successfully; returns false otherwise.
  */
-bool prepend(list_t *list, list_val_t value) {
+bool list_prepend(list_t *list, list_val_t value) {
     /* TODO: An optimization for additions to the beginning of the list */
-    return add(list, 0, value);
+    return list_add(list, 0, value);
 }
 
 /* Returns true if the list is empty, false otherwise. */
-bool is_empty(list_t list) {
+bool list_is_empty(list_t list) {
     return list.size == 0;
 }
 
 /* Removes and returns the item located at idx in list. */
-list_val_t delete(list_t *list, size_t idx) {
-    node_t *curr = next(list->head, NULL);
+list_val_t list_delete(list_t *list, size_t idx) {
+    node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
     for (size_t i = 0; i < idx; i++) {
-        node_t *next_link = next(curr, prev);
+        node_t *next_link = list_next(curr, prev);
         prev = curr;
         curr = next_link;
     }
@@ -131,7 +131,7 @@ list_val_t delete(list_t *list, size_t idx) {
     if (curr == list->tail) {
         next_link = NULL;
     } else {
-        next_link = next(curr, prev);
+        next_link = list_next(curr, prev);
     }
     next_link->link = (node_t *)((intptr_t)(next_link->link) ^ (intptr_t)curr ^ (intptr_t)prev);
     prev->link      = (node_t *)((intptr_t)(prev->link)      ^ (intptr_t)curr ^ (intptr_t)next_link);
@@ -145,11 +145,11 @@ list_val_t delete(list_t *list, size_t idx) {
 }
 
 /* Returns the item at idx in list. */
-list_val_t get(list_t list, size_t idx) {
-    node_t *curr = next(list.head, NULL);
+list_val_t list_get(list_t list, size_t idx) {
+    node_t *curr = list_next(list.head, NULL);
     node_t *prev = list.head;
     for (size_t i = 0; i < idx; i++) {
-        node_t *next_link = next(curr, prev);
+        node_t *next_link = list_next(curr, prev);
         prev = curr;
         curr = next_link;
     }
@@ -157,7 +157,7 @@ list_val_t get(list_t list, size_t idx) {
 }
 
 /* Provides the size of the list. */
-size_t size(list_t list) {
+size_t list_size(list_t list) {
     return list.size;
 }
 
@@ -165,8 +165,8 @@ size_t size(list_t list) {
  * Provides the index of value in the list. Returns -1 if value is not in the
  * list.
  */
-ssize_t find(list_t list, list_val_t value) {
-    node_t *curr = next(list.head, NULL);
+ssize_t list_find(list_t list, list_val_t value) {
+    node_t *curr = list_next(list.head, NULL);
     node_t *prev = list.head;
     size_t idx = 0;
     /* Traverse until we find the first node with the value*/
@@ -174,7 +174,7 @@ ssize_t find(list_t list, list_val_t value) {
         if (curr->value == value) {
             return idx;
         }
-        node_t *next_node = next(curr, prev);
+        node_t *next_node = list_next(curr, prev);
         prev = curr;
         curr = next_node;
         idx++;
@@ -187,11 +187,11 @@ ssize_t find(list_t list, list_val_t value) {
  * Checks whether the provided list contains the value provided. Returns true
  * if value is in the list, returns false if it is not.
  */
-bool contains(list_t list, list_val_t value) {
+bool list_contains(list_t list, list_val_t value) {
     node_t *curr = list.head;
     node_t *prev = NULL;
     while (curr != list.tail) {
-        node_t *next_node = next(curr, prev);
+        node_t *next_node = list_next(curr, prev);
         prev = curr;
         curr = next_node;
         if (curr->value == value) {

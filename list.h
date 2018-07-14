@@ -3,6 +3,7 @@
  *
  * This file is licensed under the terms of the MIT License
  */
+#include <stdbool.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -19,14 +20,14 @@ typedef struct list {
     size_t size;
 } list_t;
 
-list_t *create_list();
-void destroy_list(list_t *);
-bool add(list_t *, size_t, list_val_t);
-bool append(list_t *, list_val_t);
-bool prepend(list_t *, list_val_t);
-bool is_empty(list_t);
-list_val_t delete(list_t *, size_t);
-list_val_t get(list_t, size_t);
-size_t size(list_t);
-ssize_t find(list_t, list_val_t);
-bool contains(list_t, list_val_t);
+list_t *list_create();
+void list_destroy(list_t *);
+bool list_add(list_t *, size_t, list_val_t);
+bool list_append(list_t *, list_val_t);
+bool list_prepend(list_t *, list_val_t);
+bool list_is_empty(list_t);
+list_val_t list_delete(list_t *, size_t);
+list_val_t list_get(list_t, size_t);
+size_t list_size(list_t);
+ssize_t list_find(list_t, list_val_t);
+bool list_contains(list_t, list_val_t);
