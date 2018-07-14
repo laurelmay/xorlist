@@ -13,8 +13,10 @@ int main(void) {
         list_append(list, i);
     }
 
+    list_add(list, 5, 999);
+
     printf("\n== Get each item==\n");
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 11; i++) {
         int32_t val = list_get(*list, i);
         printf("%d: %d\n", i, val);
     }
@@ -26,7 +28,7 @@ int main(void) {
     }
 
     printf("\n== Delete each item==\n");
-    for (int i = 9; i >= 0; i--) {
+    for (int i = 10; i >= 0; i--) {
         int32_t val = list_delete(list, i);
         printf("%d: %d\n", i, val);
     }
