@@ -64,17 +64,9 @@ list_t *list_create() {
  * itself.
  */
 void list_destroy(list_t *list) {
-    node_t *curr = list_next(list->head, NULL);
-    node_t *prev = list->head;
-    size_t idx = 0;
-
     /* Destroy all remaining items in the list. */
-    while (curr != list->tail) {
-        node_t *next_link = list_next(curr, prev);
-        list_delete(list, idx);
-        prev = curr;
-        curr = next_link;
-        idx++;
+    while (list->size > 0) {
+        list_delete(list, 0);
     }
 
     /* Free memory for list struct members. */
@@ -139,12 +131,12 @@ bool list_append(list_t *list, list_val_t value) {
 
     new_node->value = value;
 
-    node_t *prev = list_prev(list->tail, NULL);
-    node_t *next = list->tail;
+    node_t *last = list_prev(list->tail, NULL);
+    node_t *tail = list->tail;
 
-    new_node->link = calc_new_ptr(prev, NULL, next);
-    prev->link = calc_new_ptr(prev->link, new_node, next);
-    next->link = calc_new_ptr(prev, new_node, next->link);
+    new_node->link = calc_new_ptr(last, NULL, tail);
+    last->link = calc_new_ptr(last->link, new_node, tail);
+    tail->link = calc_new_ptr(last, new_node, tail->link);
 
     list->size += 1;
 
@@ -223,7 +215,7 @@ list_val_t list_get(list_t list, size_t idx) {
 
     if (idx > list.size / 2) {
         start_at = list.tail;
-        count = list.size - idx;
+        count = list.size - idx - 1;
     }
 
     node_t *curr = list_next(start_at, NULL);
@@ -248,17 +240,20 @@ bool list_set(list_t *list, size_t idx, list_val_t value) {
 
     /* Start at the end if setting a value closer to the end. */
     if (idx > list->size / 2) {
-        count = list->size - idx;
+        count = list->size - idx - 1;
         start_at = list->tail;
     }
 
+    node_t *curr = list_next(start_at, NULL);
+    node_t *prev = start_at;
+
     for (size_t i = 0; i < count; i++) {
-        node_t *next_node = list_next(next, prev);
-        prev = next;
-        next = next_node;
+        node_t *next_node = list_next(curr, prev);
+        prev = curr;
+        curr = next_node;
     }
 
-    next_node->value = value;
+    curr->value = value;
 
     return true;
 }

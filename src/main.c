@@ -8,9 +8,9 @@ int main(void) {
     list_t *list = list_create();
 
     printf("== List Info ==\n");
-    printf("&list = %p\n", list);
-    printf("&head = %p\n", list->head);
-    printf("&tail = %p\n", list->tail);
+    printf("&list = %p\n", (void *)list);
+    printf("&head = %p\n", (void *)list->head);
+    printf("&tail = %p\n", (void *)list->tail);
 
     printf("Get idx 0?: %d\n", list_get(*list, 0));
 
