@@ -3,10 +3,14 @@ CC=gcc
 override CFLAGS := -Wall -pedantic -std=c99 $(CFLAGS)
 override LDFLAGS := $(LDFLAGS)
 
-SRCS=list.c main.c
-OBJS=$(SRCS:.c=.o)
+SRCDIR = src
+OUTDIR = build
+INCDIR = include
 
-TARGET_LIB=list.o
+SRCS = $(shell find $(SRCDIR) -type f -name *.c)
+OBJS = $(patsubst $(SRCDIR)/%,$(OUTDIR)/%,$(SRCS:.c=.o))
+INC  = -I$(INCDIR)
+
 EXE=list_test
 
 all: $(EXE)
@@ -14,10 +18,11 @@ all: $(EXE)
 $(EXE): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+$(OUTDIR)/%.o: $(SRCDIR)/%.c
+	mkdir -p $(OUTDIR)
+	$(CC) -c $(CFLAGS) $(INC) $< -o $@
 
 clean:
-	rm -rf *.o list_test
+	rm -rf $(OUTDIR)/*.o list_test
 
 .PHONY: all default clean
