@@ -15,6 +15,9 @@ EXE=list_test
 
 all: $(EXE)
 
+tests:
+	make -C tests
+
 $(EXE): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
@@ -24,5 +27,6 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.c
 
 clean:
 	rm -rf $(OUTDIR)/*.o list_test
+	make -C tests clean
 
-.PHONY: all default clean
+.PHONY: all default clean tests
