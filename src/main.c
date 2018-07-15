@@ -19,10 +19,11 @@ int main(void) {
         list_append(list, i);
     }
 
-    list_add(list, 5, 999);
+    list_insert(list, 4, 400);
+    list_insert(list, 6, 600);
 
     printf("\n== Get each item==\n");
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
         int32_t val = list_get(*list, i);
         printf("%d: %d\n", i, val);
     }
@@ -30,11 +31,14 @@ int main(void) {
     printf("\n== Find each item==\n");
     for (int i = 1; i <= 10; i++) {
         size_t loc = list_find(*list, i);
-        printf("%ld @ %d\n", loc, i);
+        printf("%d @ %ld\n", i, loc);
     }
 
+    printf("%d @ %ld\n", 400, list_find(*list, 400));
+    printf("%d @ %ld\n", 600, list_find(*list, 600));
+
     printf("\n== Delete each item==\n");
-    for (int i = 10; i >= 0; i--) {
+    for (int i = 11; i >= 0; i--) {
         int32_t val = list_delete(list, i);
         printf("%d: %d\n", i, val);
     }

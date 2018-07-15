@@ -89,10 +89,18 @@ void list_destroy(list_t *list) {
  * Adds value to list at idx. Returns true if the item was successfully added
  * to the list; returns false otherwise.
  */
-bool list_add(list_t *list, size_t idx, list_val_t value) {
-    /* TODO: Optimize for additions in the last half of the list. */
+bool list_insert(list_t *list, size_t idx, list_val_t value) {
+    size_t count = idx;
+    node_t *start_at = list->head;
+
     if (idx > list->size) {
         return false;
+    }
+
+    /* Start at the end if inserting closer to the end. */
+    if (idx > list->size / 2) {
+        count = list->size - idx;
+        start_at = list->tail;
     }
 
     /* Initialize the new node */
@@ -101,11 +109,11 @@ bool list_add(list_t *list, size_t idx, list_val_t value) {
 
     new_node->value = value;
 
-    node_t *next = list_next(list->head, NULL);
-    node_t *prev = list->head;
+    node_t *next = list_next(start_at, NULL);
+    node_t *prev = start_at;
 
-    /* Find the insertion point */
-    for (size_t i = 0; i < idx; i++) {
+    /* Find where the new node will be inserted */
+    for (size_t i = 0; i < count; i++) {
         node_t *next_node = list_next(next, prev);
         prev = next;
         next = next_node;
@@ -126,8 +134,21 @@ bool list_add(list_t *list, size_t idx, list_val_t value) {
  * successfully; returns false otherwise.
  */
 bool list_append(list_t *list, list_val_t value) {
-    /* TODO: An optimization for additions to the end of the list */
-    return list_add(list, list->size, value);
+    node_t *new_node = calloc(1, sizeof(node_t));
+    if (!new_node) return false;
+
+    new_node->value = value;
+
+    node_t *prev = list_prev(list->tail, NULL);
+    node_t *next = list->tail;
+
+    new_node->link = calc_new_ptr(prev, NULL, next);
+    prev->link = calc_new_ptr(prev->link, new_node, next);
+    next->link = calc_new_ptr(prev, new_node, next->link);
+
+    list->size += 1;
+
+    return true;
 }
 
 /* 
@@ -135,7 +156,7 @@ bool list_append(list_t *list, list_val_t value) {
  * successfully; returns false otherwise.
  */
 bool list_prepend(list_t *list, list_val_t value) {
-    return list_add(list, 0, value);
+    return list_insert(list, 0, value);
 }
 
 /* Returns true if the list is empty, false otherwise. */
@@ -145,14 +166,26 @@ bool list_is_empty(list_t list) {
 
 /* Removes and returns the item located at idx in list. */
 list_val_t list_delete(list_t *list, size_t idx) {
+    size_t count = idx;
+    node_t *start_at = list->head;
+    node_t *end_at = list->tail;
+
     if (idx > list->size) {
-        return -1;
+        return false;
+    }
+
+    /* Start at the end if removing closer to the end. */
+    if (idx > list->size / 2) {
+        count = list->size - idx - 1;
+        start_at = list->tail;
+        end_at = list->head;
     }
 
     /* Iterate to the index to remove */
-    node_t *curr = list_next(list->head, NULL);
-    node_t *prev = list->head;
-    for (size_t i = 0; i < idx; i++) {
+    node_t *curr = list_next(start_at, NULL);
+    node_t *prev = start_at;
+
+    for (size_t i = 0; i < count; i++) {
         node_t *next_link = list_next(curr, prev);
         prev = curr;
         curr = next_link;
@@ -160,7 +193,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
 
     /* Ensure we didn't accidentally get to the tail. */
     node_t *next_link;
-    if (curr == list->tail) {
+    if (curr == end_at) {
         next_link = NULL;
     } else {
         next_link = list_next(curr, prev);
@@ -181,10 +214,22 @@ list_val_t list_delete(list_t *list, size_t idx) {
 
 /* Returns the item at idx in list. */
 list_val_t list_get(list_t list, size_t idx) {
-    node_t *curr = list_next(list.head, NULL);
-    node_t *prev = list.head;
+    node_t *start_at = list.head;
+    size_t count = idx;
 
-    for (size_t i = 0; i < idx; i++) {
+    if (idx >= list.size) {
+        return -1;
+    }
+
+    if (idx > list.size / 2) {
+        start_at = list.tail;
+        count = list.size - idx;
+    }
+
+    node_t *curr = list_next(start_at, NULL);
+    node_t *prev = start_at;
+
+    for (size_t i = 0; i < count; i++) {
         node_t *next_link = list_next(curr, prev);
         prev = curr;
         curr = next_link;
@@ -192,9 +237,47 @@ list_val_t list_get(list_t list, size_t idx) {
     return curr->value;
 }
 
+/* Changes the value at a selected index. */
+bool list_set(list_t *list, size_t idx, list_val_t value) {
+    size_t count = idx;
+    node_t *start_at = list->head;
+
+    if (idx > list->size) {
+        return false;
+    }
+
+    /* Start at the end if setting a value closer to the end. */
+    if (idx > list->size / 2) {
+        count = list->size - idx;
+        start_at = list->tail;
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        node_t *next_node = list_next(next, prev);
+        prev = next;
+        next = next_node;
+    }
+
+    next_node->value = value;
+
+    return true;
+}
+
 /* Provides the size of the list. */
 size_t list_size(list_t list) {
     return list.size;
+}
+
+/* Remove an item from the list. */
+size_t list_remove(list_t *list, list_val_t value) {
+    size_t idx = list_find(*list, value);
+    if (idx > list->size) {
+        return idx;
+    }
+
+    list_delete(list, idx);
+
+    return idx;
 }
 
 /* 

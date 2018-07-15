@@ -31,12 +31,14 @@ typedef struct {
 
 list_t    *list_create();
 void       list_destroy(list_t *);
-bool       list_add(list_t *, size_t, list_val_t);
+bool       list_insert(list_t *, size_t, list_val_t);
 bool       list_append(list_t *, list_val_t);
 bool       list_prepend(list_t *, list_val_t);
 bool       list_is_empty(list_t);
 list_val_t list_delete(list_t *, size_t);
+size_t     list_remove(list_t *, list_val_t);
 list_val_t list_get(list_t, size_t);
+bool       list_set(list_t *, size_t, list_val_t);
 size_t     list_size(list_t);
 ssize_t    list_find(list_t, list_val_t);
 bool       list_contains(list_t, list_val_t);

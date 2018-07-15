@@ -21,12 +21,12 @@ START_TEST(ADD_TO_LIST)
 {
     list_t *list = list_create();
 
-    ck_assert(!list_add(list, 10, 1));
-    ck_assert(!list_add(list, -1, 1));
+    ck_assert(!list_insert(list, 10, 1));
+    ck_assert(!list_insert(list, -1, 1));
 
     list_val_t value = 1234;
 
-    ck_assert(list_add(list, 0, value));
+    ck_assert(list_insert(list, 0, value));
     ck_assert(list_get(*list, 0) == value);
 
     /* Access node */
