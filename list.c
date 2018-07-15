@@ -15,12 +15,18 @@
 #include "list.h"
 
 /*
+ * Calculates the new link for a node. Useful for insertions and removals.
+ */
+static node_t *calc_new_ptr(void *a, void *b, void *c) {
+    return (node_t *)((intptr_t)(a) ^ (intptr_t)(b) ^ (intptr_t)(c));
+}
+
+/*
  * Returns the next item in the list after curr.
  */
 static node_t *list_next(node_t *curr, node_t *prev) {
-    return (node_t *)((intptr_t)curr->link ^ (intptr_t)prev);
+    return calc_new_ptr(NULL, curr->link, prev);
 }
-
 
 /*
  * Creates an instance of the list allocated on the heap. The list must be
@@ -30,6 +36,11 @@ list_t *list_create() {
     list_t *list = calloc(1, sizeof(list_t));
     node_t *head = malloc(sizeof(node_t));
     node_t *tail = malloc(sizeof(node_t));
+
+    if (!list || !head || !tail) {
+        return NULL;
+    }
+
     head->link = tail;
     tail->link = head;
 
@@ -49,6 +60,8 @@ void list_destroy(list_t *list) {
     node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
     size_t idx = 0;
+
+    /* Destroy all remaining items in the list. */
     while (curr != list->tail) {
         node_t *next_link = list_next(curr, prev);
         list_delete(list, idx);
@@ -56,6 +69,8 @@ void list_destroy(list_t *list) {
         curr = next_link;
         idx++;
     }
+
+    /* Free memory for list struct members. */
     free(list->head);
     free(list->tail);
     list->head = NULL;
@@ -68,27 +83,30 @@ void list_destroy(list_t *list) {
  * to the list; returns false otherwise.
  */
 bool list_add(list_t *list, size_t idx, list_val_t value) {
-    /* Allocate memory for the new node */
-    if (idx > list->size)
-        printf("%ld > %ld\n", idx, list->size);
-
-    node_t *new_node = calloc(1, sizeof(node_t));
-    if (new_node == NULL)
+    if (idx > list->size) {
         return false;
+    }
+
+    /* Initialize the new node */
+    node_t *new_node = calloc(1, sizeof(node_t));
+    if (!new_node) return false;
+
     new_node->value = value;
 
     node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
 
+    /* Find the insertion point */
     for (size_t i = 0; i < idx; i++) {
         node_t *next_node = list_next(curr, prev);
         prev = curr;
         curr = next_node;
     }
 
-    new_node->link = (node_t *)((intptr_t)prev ^ (intptr_t)curr);
-    prev->link = (node_t *)((intptr_t)(prev->link) ^ (intptr_t)curr ^ (intptr_t)new_node);
-    curr->link = (node_t *)((intptr_t)(curr->link) ^ (intptr_t)prev ^ (intptr_t)new_node);
+    /* Calculate the new links to previous and next nodes */
+    new_node->link = calc_new_ptr(NULL, prev, curr);
+    prev->link = calc_new_ptr(prev->link, curr, new_node);
+    curr->link = calc_new_ptr(curr->link, prev, new_node);
 
     list->size += 1;
 
@@ -109,7 +127,6 @@ bool list_append(list_t *list, list_val_t value) {
  * successfully; returns false otherwise.
  */
 bool list_prepend(list_t *list, list_val_t value) {
-    /* TODO: An optimization for additions to the beginning of the list */
     return list_add(list, 0, value);
 }
 
@@ -120,6 +137,11 @@ bool list_is_empty(list_t list) {
 
 /* Removes and returns the item located at idx in list. */
 list_val_t list_delete(list_t *list, size_t idx) {
+    if (idx > list->size) {
+        return -1;
+    }
+
+    /* Iterate to the index to remove */
     node_t *curr = list_next(list->head, NULL);
     node_t *prev = list->head;
     for (size_t i = 0; i < idx; i++) {
@@ -127,18 +149,23 @@ list_val_t list_delete(list_t *list, size_t idx) {
         prev = curr;
         curr = next_link;
     }
+
+    /* Ensure we didn't accidentally get to the tail. */
     node_t *next_link;
     if (curr == list->tail) {
         next_link = NULL;
     } else {
         next_link = list_next(curr, prev);
     }
-    next_link->link = (node_t *)((intptr_t)(next_link->link) ^ (intptr_t)curr ^ (intptr_t)prev);
-    prev->link      = (node_t *)((intptr_t)(prev->link)      ^ (intptr_t)curr ^ (intptr_t)next_link);
 
+    /* Calculate the new links to nodes. */
+    next_link->link = calc_new_ptr(next_link->link, curr, prev);
+    prev-> link     = calc_new_ptr(prev->link, curr, next_link);
+
+    /* Get the value to return. */
     list_val_t val = curr->value;
-    free(curr);
 
+    free(curr);
     list->size -= 1;
 
     return val;
@@ -169,6 +196,7 @@ ssize_t list_find(list_t list, list_val_t value) {
     node_t *curr = list_next(list.head, NULL);
     node_t *prev = list.head;
     size_t idx = 0;
+
     /* Traverse until we find the first node with the value*/
     while (curr != list.tail) {
         if (curr->value == value) {
@@ -179,7 +207,8 @@ ssize_t list_find(list_t list, list_val_t value) {
         curr = next_node;
         idx++;
     }
-    /* Since curr has been updated, return prev, the location of value */
+
+    /* The item does not exist in the list. */
     return -1;
 }
 
@@ -198,5 +227,7 @@ bool list_contains(list_t list, list_val_t value) {
             return true;
         }
     }
+
+    /* The item does not exist in the list. */
     return false;
 }
