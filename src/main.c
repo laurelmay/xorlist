@@ -6,6 +6,12 @@
 int main(void) {
 
     list_t *list = list_create();
+
+    printf("== List Info ==\n");
+    printf("&list = %p\n", list);
+    printf("&head = %p\n", list->head);
+    printf("&tail = %p\n", list->tail);
+
     printf("Get idx 0?: %d\n", list_get(*list, 0));
 
     printf("\n== Add to list ==\n");
