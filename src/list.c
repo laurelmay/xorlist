@@ -25,7 +25,14 @@ static node_t *calc_new_ptr(void *a, void *b, void *c) {
  * Returns the next item in the list after curr.
  */
 static node_t *list_next(node_t *curr, node_t *prev) {
-    return calc_new_ptr(NULL, curr->link, prev);
+    return calc_new_ptr(prev, curr->link, NULL);
+}
+
+/*
+ * Returns the previous item in the list before curr.
+ */
+static node_t *list_prev(node_t *curr, node_t *next) {
+    return calc_new_ptr(NULL, curr->link, next);
 }
 
 /*
@@ -41,8 +48,8 @@ list_t *list_create() {
         return NULL;
     }
 
-    head->link = tail;
-    tail->link = head;
+    head->link = calc_new_ptr(NULL, NULL, tail);
+    tail->link = calc_new_ptr(head, NULL, NULL);
 
     list->head = head;
     list->tail = tail;
@@ -83,6 +90,7 @@ void list_destroy(list_t *list) {
  * to the list; returns false otherwise.
  */
 bool list_add(list_t *list, size_t idx, list_val_t value) {
+    /* TODO: Optimize for additions in the last half of the list. */
     if (idx > list->size) {
         return false;
     }
@@ -93,20 +101,20 @@ bool list_add(list_t *list, size_t idx, list_val_t value) {
 
     new_node->value = value;
 
-    node_t *curr = list_next(list->head, NULL);
+    node_t *next = list_next(list->head, NULL);
     node_t *prev = list->head;
 
     /* Find the insertion point */
     for (size_t i = 0; i < idx; i++) {
-        node_t *next_node = list_next(curr, prev);
-        prev = curr;
-        curr = next_node;
+        node_t *next_node = list_next(next, prev);
+        prev = next;
+        next = next_node;
     }
 
     /* Calculate the new links to previous and next nodes */
-    new_node->link = calc_new_ptr(NULL, prev, curr);
-    prev->link = calc_new_ptr(prev->link, curr, new_node);
-    curr->link = calc_new_ptr(curr->link, prev, new_node);
+    new_node->link = calc_new_ptr(prev, NULL, next);
+    prev->link = calc_new_ptr(prev->link, new_node, next);
+    next->link = calc_new_ptr(prev, new_node, next->link);
 
     list->size += 1;
 
@@ -159,7 +167,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
     }
 
     /* Calculate the new links to nodes. */
-    next_link->link = calc_new_ptr(next_link->link, curr, prev);
+    next_link->link = calc_new_ptr(prev, curr, next_link->link);
     prev-> link     = calc_new_ptr(prev->link, curr, next_link);
 
     /* Get the value to return. */
@@ -175,6 +183,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
 list_val_t list_get(list_t list, size_t idx) {
     node_t *curr = list_next(list.head, NULL);
     node_t *prev = list.head;
+
     for (size_t i = 0; i < idx; i++) {
         node_t *next_link = list_next(curr, prev);
         prev = curr;
