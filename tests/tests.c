@@ -42,6 +42,34 @@ START_TEST(LIST_INSERT)
 END_TEST
 
 
+START_TEST(LIST_INSERT_INDEX)
+{
+    list_t *list = list_create();
+
+    for (int i = 0; i < 10; i++) {
+        list_append(list, i);
+    }
+
+    list_insert(list, 4, 400);
+    list_insert(list, 6, 600);
+
+    for (int i = 0; i < 4; i++) {
+        ck_assert(list_get(*list, i) == i);
+    }
+
+    ck_assert(list_get(*list, 4) == 400);
+    ck_assert(list_get(*list, 5) == 4);
+    ck_assert(list_get(*list, 6) == 600);
+
+    for (int i = 7; i < list_size(*list); i++) {
+        ck_assert(list_get(*list, i) == (i - 2));
+    }
+
+    list_destroy(list);
+}
+END_TEST
+
+
 START_TEST(LIST_APPEND)
 {
     list_t *list = list_create();
@@ -175,7 +203,7 @@ START_TEST(LIST_REMOVE)
 
     for (int i = 0; i < 10; i++) {
         int val = (i + 2) * 2;
-        size_t idx = list_remove(list, val);
+        ssize_t idx = list_remove(list, val);
         ck_assert(idx == 0);
     }
 
@@ -227,6 +255,7 @@ void tests (Suite *s) {
     TCase *tests = tcase_create("tests");
     tcase_add_test(tests, LIST_CREATE);
     tcase_add_test(tests, LIST_INSERT);
+    tcase_add_test(tests, LIST_INSERT_INDEX);
     tcase_add_test(tests, LIST_APPEND);
     tcase_add_test(tests, LIST_PREPEND);
     tcase_add_test(tests, LIST_EMPTY);
