@@ -17,7 +17,7 @@
 typedef struct {
     node_t *prev;
     node_t *curr;
-} node_find_t;
+} node_pair_t;
 
 /*
  * Calculates the new link for a node. Useful for insertions and removals.
@@ -60,12 +60,12 @@ static bool add_at_node(list_t *list, list_val_t value,
     return true;
 }
 
-static node_find_t traverse_to_idx(list_t *list, size_t idx) {
+static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
     node_t *starting_end;
     size_t num_iter;
 
     if (idx > list->size) {
-        node_find_t all_null = { .prev = NULL, .curr = NULL };
+        node_pair_t all_null = { .prev = NULL, .curr = NULL };
         return all_null;
     }
 
@@ -86,7 +86,7 @@ static node_find_t traverse_to_idx(list_t *list, size_t idx) {
         curr = tmp;
     }
 
-    node_find_t result = { .prev = prev, .curr = curr };
+    node_pair_t result = { .prev = prev, .curr = curr };
 
     return result;
 }
@@ -138,7 +138,7 @@ void list_destroy(list_t *list) {
  * to the list; returns false otherwise.
  */
 bool list_insert(list_t *list, size_t idx, list_val_t value) {
-    node_find_t nodes = traverse_to_idx(list, idx);
+    node_pair_t nodes = traverse_to_idx(list, idx);
     if (!nodes.prev || !nodes.curr) return false;
 
     if (idx > list->size / 2) {
@@ -172,7 +172,7 @@ bool list_is_empty(list_t list) {
 
 /* Removes and returns the item located at idx in list. */
 list_val_t list_delete(list_t *list, size_t idx) {
-    node_find_t nodes = traverse_to_idx(list, idx);
+    node_pair_t nodes = traverse_to_idx(list, idx);
     if (!nodes.prev || !nodes.curr) return false;
 
     node_t *prev = nodes.prev;
@@ -197,7 +197,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
 list_val_t list_get(list_t list, size_t idx) {
     if (idx >= list.size) return -1;
 
-    node_find_t nodes = traverse_to_idx(&list, idx);
+    node_pair_t nodes = traverse_to_idx(&list, idx);
     if (!nodes.prev || !nodes.curr) return -1;
 
     return nodes.curr->value;
@@ -205,7 +205,7 @@ list_val_t list_get(list_t list, size_t idx) {
 
 /* Changes the value at a selected index. */
 bool list_set(list_t *list, size_t idx, list_val_t value) {
-    node_find_t nodes = traverse_to_idx(list, idx);
+    node_pair_t nodes = traverse_to_idx(list, idx);
     if (!nodes.curr) return false;
 
     nodes.curr->value = value;
