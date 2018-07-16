@@ -154,7 +154,7 @@ bool list_insert(list_t *list, size_t idx, list_val_t value) {
  * successfully; returns false otherwise.
  */
 bool list_append(list_t *list, list_val_t value) {
-    return add_at_node(list, value, list->tail, list_prev(list->tail, NULL));
+    return add_at_node(list, value, list_prev(list->tail, NULL), list->tail);
 }
 
 /* 
