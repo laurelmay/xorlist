@@ -14,82 +14,30 @@
 
 #include "list.h"
 
+/*
+ * Struct that can be used to find a surrounding node (or just be used for
+ * the included nodes).
+ */
 typedef struct {
     node_t *prev;
     node_t *curr;
 } node_pair_t;
 
-/*
- * Calculates the new link for a node. Useful for insertions and removals.
- */
-static node_t *calc_new_ptr(void *a, void *b, void *c) {
-    return (node_t *)((intptr_t)(a) ^ (intptr_t)(b) ^ (intptr_t)(c));
-}
 
 /*
- * Returns the next item in the list after curr.
+ * Prototypes for the utility functions.
  */
-static node_t *list_next(node_t *curr, node_t *prev) {
-    return calc_new_ptr(prev, curr->link, NULL);
-}
 
-/*
- * Returns the previous item in the list before curr.
- */
-static node_t *list_prev(node_t *curr, node_t *next) {
-    return calc_new_ptr(NULL, curr->link, next);
-}
+static node_t      *calc_new_ptr(void *, void *, void *);
+static node_t      *list_next(node_t *, node_t *);
+static node_t      *list_prev(node_t *, node_t *);
+static bool         add_at_node(list_t *, list_val_t, node_t *, node_t *);
+static node_pair_t  traverse_to_idx(list_t *, size_t);
 
-/*
- * Add a node between two given nodes.
- */
-static bool add_at_node(list_t *list, list_val_t value,
-                        node_t *before, node_t *after) {
-    node_t *new_node = malloc(sizeof(node_t));
-    if (!new_node) return false;
-    
-    new_node->value = value;
 
-    /* Set the pointers to surrounding nodes. */
-    new_node->link = calc_new_ptr(before,       NULL,     after);
-    after->link    = calc_new_ptr(before,       new_node, after->link);
-    before->link   = calc_new_ptr(before->link, new_node, after);
-
-    list->size += 1;
-
-    return true;
-}
-
-static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
-    node_t *starting_end;
-    size_t num_iter;
-
-    if (idx > list->size) {
-        node_pair_t all_null = { .prev = NULL, .curr = NULL };
-        return all_null;
-    }
-
-    if (idx <= list->size / 2) {
-        starting_end = list->head;
-        num_iter = idx;
-    } else {
-        starting_end = list->tail;
-        num_iter = list->size - idx - 1;
-    }
-
-    node_t *curr = list_next(starting_end, NULL);
-    node_t *prev = starting_end;
-
-    for (int i = 0; i < num_iter; i++) {
-        node_t *tmp = list_next(curr, prev);
-        prev = curr;
-        curr = tmp;
-    }
-
-    node_pair_t result = { .prev = prev, .curr = curr };
-
-    return result;
-}
+/******
+ * Exported Functions
+ ******/
 
 /*
  * Creates an instance of the list allocated on the heap. The list must be
@@ -180,8 +128,8 @@ list_val_t list_delete(list_t *list, size_t idx) {
     node_t *next = list_next(curr, prev);
 
     /* Calculate the new links to nodes. */
-    next->link      = calc_new_ptr(prev,       curr, next->link);
-    prev->link      = calc_new_ptr(prev->link, curr, next);
+    next->link = calc_new_ptr(prev,       curr, next->link);
+    prev->link = calc_new_ptr(prev->link, curr, next);
 
     /* Get the value to return. */
     list_val_t val = curr->value;
@@ -272,4 +220,85 @@ bool list_contains(list_t list, list_val_t value) {
 
     /* The item does not exist in the list. */
     return false;
+}
+
+
+/*****
+ * Utility Functions
+ *****/
+
+/*
+ * Calculates the new link for a node. Useful for insertions and removals.
+ */
+static node_t *calc_new_ptr(void *a, void *b, void *c) {
+    return (node_t *)((intptr_t)(a) ^ (intptr_t)(b) ^ (intptr_t)(c));
+}
+
+/*
+ * Returns the next item in the list after curr.
+ */
+static node_t *list_next(node_t *curr, node_t *prev) {
+    return calc_new_ptr(prev, curr->link, NULL);
+}
+
+/*
+ * Returns the previous item in the list before curr.
+ */
+static node_t *list_prev(node_t *curr, node_t *next) {
+    return calc_new_ptr(NULL, curr->link, next);
+}
+
+/*
+ * Add a node with a given value between two given nodes.
+ */
+static bool add_at_node(list_t *list, list_val_t value,
+                        node_t *before, node_t *after) {
+    node_t *new_node = malloc(sizeof(node_t));
+    if (!new_node) return false;
+
+    new_node->value = value;
+
+    /* Set the pointers to surrounding nodes. */
+    new_node->link = calc_new_ptr(before,       NULL,     after);
+    after->link    = calc_new_ptr(before,       new_node, after->link);
+    before->link   = calc_new_ptr(before->link, new_node, after);
+
+    list->size += 1;
+
+    return true;
+}
+
+/*
+ * Traverses the list and returns the node at the specified index. This is
+ * only useful when the index is actually known.
+ */
+static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
+    node_t *starting_end;
+    size_t num_iter;
+
+    if (idx > list->size) {
+        node_pair_t all_null = { .prev = NULL, .curr = NULL };
+        return all_null;
+    }
+
+    if (idx <= list->size / 2) {
+        starting_end = list->head;
+        num_iter = idx;
+    } else {
+        starting_end = list->tail;
+        num_iter = list->size - idx - 1;
+    }
+
+    node_t *curr = list_next(starting_end, NULL);
+    node_t *prev = starting_end;
+
+    for (int i = 0; i < num_iter; i++) {
+        node_t *tmp = list_next(curr, prev);
+        prev = curr;
+        curr = tmp;
+    }
+
+    node_pair_t result = { .prev = prev, .curr = curr };
+
+    return result;
 }
