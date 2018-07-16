@@ -5,7 +5,7 @@ An implementation of an XOR Linked List.
 An XOR Linked List is a doubly-linked list that stores the pointers to the
 next and the previous elements in the same field but XORed. Since XOR
 never causes an overflow for integers, it is safer than using addition or
-subtraction. All three of those operations are undefined or awkard for
+subtraction. All three of those operations are undefined or awkward for
 pointers, so the intptr_t is relied on heavily.
 
 Such a linked list provides little value other than than requiring
@@ -24,7 +24,7 @@ For example:
 ```
 
 Finding B requires knowing the addresses of A and HEAD. It would be
-accessed by perfoming (A->link ^ &HEAD). It could also be accessed by
+accessed by performing (A->link ^ &HEAD). It could also be accessed by
 (C->link ^ &TAIL) if traversing in reverse was desired. For the head and
 tail of the list, the address of the next and previous elements respectively
 are XORed with NULL.
