@@ -2,6 +2,7 @@
  * An implementation of an XOR Linked List.
  * "HMB" - Me when starting this
  *
+ *
  * Copyright 2018 Kyle Laker
  *
  * This file is licensed under the terms of the MIT License
@@ -89,6 +90,11 @@ bool list_insert(list_t *list, size_t idx, list_val_t value) {
     node_pair_t nodes = traverse_to_idx(list, idx);
     if (!nodes.prev || !nodes.curr) return false;
 
+    /*
+     * If we're working from the back of the list, we need to go one node
+     * further since we substract 1 from the `list->size - idx` calculation
+     * in the traverse_to_idx function.
+     */
     if (idx > list->size / 2) {
         return add_at_node(list, value,
                            nodes.curr, list_next(nodes.curr, nodes.prev));
@@ -169,8 +175,12 @@ size_t list_size(list_t list) {
 /* Remove an item from the list. */
 ssize_t list_remove(list_t *list, list_val_t value) {
     ssize_t idx = list_find(*list, value);
-    if (idx > list->size) {
-        return idx;
+
+    /*
+     * If the index is invalid, return -1 and don't remove anything.
+     */
+    if (idx > list->size || idx < 0) {
+        return -1;
     }
 
     list_delete(list, idx);
@@ -209,6 +219,7 @@ ssize_t list_find(list_t list, list_val_t value) {
 bool list_contains(list_t list, list_val_t value) {
     node_t *curr = list.head;
     node_t *prev = NULL;
+
     while (curr != list.tail) {
         node_t *next_node = list_next(curr, prev);
         prev = curr;
@@ -253,6 +264,7 @@ static node_t *list_prev(node_t *curr, node_t *next) {
  */
 static bool add_at_node(list_t *list, list_val_t value,
                         node_t *before, node_t *after) {
+    /* Allocate and initialize the new node. */
     node_t *new_node = malloc(sizeof(node_t));
     if (!new_node) return false;
 
@@ -276,19 +288,31 @@ static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
     node_t *starting_end;
     size_t num_iter;
 
+    /*
+     * If the index isn't valid, don't bother searching at all.
+     */
     if (idx > list->size) {
         node_pair_t all_null = { .prev = NULL, .curr = NULL };
         return all_null;
     }
 
+    /*
+     * Search from the end of the list for indexes after halfway.
+     */
     if (idx <= list->size / 2) {
         starting_end = list->head;
         num_iter = idx;
     } else {
         starting_end = list->tail;
+        /*
+         * Subtrace one so to fix index calculations for accesses. This does
+         * present a small issue when adding new nodes, but it's a simple
+         * workaround.
+         */
         num_iter = list->size - idx - 1;
     }
 
+    /* Start traversing from the end until the needed index. */
     node_t *curr = list_next(starting_end, NULL);
     node_t *prev = starting_end;
 
@@ -299,6 +323,5 @@ static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
     }
 
     node_pair_t result = { .prev = prev, .curr = curr };
-
     return result;
 }
