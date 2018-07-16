@@ -1,3 +1,5 @@
+#ifndef __LIST_H
+#define __LIST_H
 /*
  * Header file for xorlist.
  *
@@ -9,6 +11,7 @@
 
 /* Adjust this typedef to change the types of values stored in the list. */
 typedef int32_t list_val_t;
+
 
 /* Exported structs */
 
@@ -27,8 +30,8 @@ typedef struct {
     size_t size;
 } list_t;
 
-/* Exported list functions */
 
+/* Exported list functions */
 list_t    *list_create();
 void       list_destroy(list_t *);
 bool       list_insert(list_t *, size_t, list_val_t);
@@ -42,3 +45,5 @@ bool       list_set(list_t *, size_t, list_val_t);
 size_t     list_size(list_t);
 ssize_t    list_find(list_t, list_val_t);
 bool       list_contains(list_t, list_val_t);
+
+#endif
