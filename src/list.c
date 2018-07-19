@@ -44,7 +44,8 @@ static node_pair_t  traverse_to_idx(list_t *, size_t);
  * Creates an instance of the list allocated on the heap. The list must be
  * destroyed by calling the list_destroy() function.
  */
-list_t *list_create() {
+list_t *list_create()
+{
     list_t *list = malloc(sizeof(list_t));
     node_t *head = malloc(sizeof(node_t));
     node_t *tail = malloc(sizeof(node_t));
@@ -68,7 +69,8 @@ list_t *list_create() {
  * Removes all items from the list and then free()'s the memory for the list
  * itself. The list may not be used after callng this function.
  */
-void list_destroy(list_t *list) {
+void list_destroy(list_t *list)
+{
     /* Destroy all remaining items in the list. */
     while (list->size > 0) {
         list_delete(list, 0);
@@ -86,9 +88,12 @@ void list_destroy(list_t *list) {
  * Adds value to list at idx. Returns true if the item was successfully added
  * to the list; returns false otherwise.
  */
-bool list_insert(list_t *list, size_t idx, list_val_t value) {
+bool list_insert(list_t *list, size_t idx, list_val_t value)
+{
     node_pair_t nodes = traverse_to_idx(list, idx);
-    if (!nodes.prev || !nodes.curr) return false;
+    if (!nodes.prev || !nodes.curr) {
+        return false;
+    }
 
     /*
      * If we're working from the back of the list, we need to go one node
@@ -107,27 +112,33 @@ bool list_insert(list_t *list, size_t idx, list_val_t value) {
  * Adds an item to the end of list. Returns true if the item was added
  * successfully; returns false otherwise.
  */
-bool list_append(list_t *list, list_val_t value) {
+bool list_append(list_t *list, list_val_t value)
+{
     return add_at_node(list, value, list_prev(list->tail, NULL), list->tail);
 }
 
-/* 
+/*
  * Adds an item to the beginning of list. Returns true if the item was added
  * successfully; returns false otherwise.
  */
-bool list_prepend(list_t *list, list_val_t value) {
+bool list_prepend(list_t *list, list_val_t value)
+{
     return add_at_node(list, value, list->head, list_next(list->head, NULL));
 }
 
 /* Returns true if the list is empty, false otherwise. */
-bool list_is_empty(list_t list) {
+bool list_is_empty(list_t list)
+{
     return list.size == 0;
 }
 
 /* Removes and returns the item located at idx in list. */
-list_val_t list_delete(list_t *list, size_t idx) {
+list_val_t list_delete(list_t *list, size_t idx)
+{
     node_pair_t nodes = traverse_to_idx(list, idx);
-    if (!nodes.prev || !nodes.curr) return false;
+    if (!nodes.prev || !nodes.curr) {
+        return false;
+    }
 
     node_t *prev = nodes.prev;
     node_t *curr = nodes.curr;
@@ -148,19 +159,27 @@ list_val_t list_delete(list_t *list, size_t idx) {
 }
 
 /* Returns the item at idx in list. */
-list_val_t list_get(list_t list, size_t idx) {
-    if (idx >= list.size) return -1;
+list_val_t list_get(list_t list, size_t idx)
+{
+    if (idx >= list.size) {
+        return -1;
+    }
 
     node_pair_t nodes = traverse_to_idx(&list, idx);
-    if (!nodes.prev || !nodes.curr) return -1;
+    if (!nodes.prev || !nodes.curr) {
+        return -1;
+    }
 
     return nodes.curr->value;
 }
 
 /* Changes the value at a selected index. */
-bool list_set(list_t *list, size_t idx, list_val_t value) {
+bool list_set(list_t *list, size_t idx, list_val_t value)
+{
     node_pair_t nodes = traverse_to_idx(list, idx);
-    if (!nodes.curr) return false;
+    if (!nodes.curr) {
+        return false;
+    }
 
     nodes.curr->value = value;
 
@@ -168,12 +187,14 @@ bool list_set(list_t *list, size_t idx, list_val_t value) {
 }
 
 /* Provides the size of the list. */
-size_t list_size(list_t list) {
+size_t list_size(list_t list)
+{
     return list.size;
 }
 
 /* Remove an item from the list. */
-ssize_t list_remove(list_t *list, list_val_t value) {
+ssize_t list_remove(list_t *list, list_val_t value)
+{
     ssize_t idx = list_find(*list, value);
 
     /*
@@ -188,11 +209,12 @@ ssize_t list_remove(list_t *list, list_val_t value) {
     return idx;
 }
 
-/* 
+/*
  * Provides the index of value in the list. Returns -1 if value is not in the
  * list.
  */
-ssize_t list_find(list_t list, list_val_t value) {
+ssize_t list_find(list_t list, list_val_t value)
+{
     node_t *curr = list_next(list.head, NULL);
     node_t *prev = list.head;
     size_t idx = 0;
@@ -212,11 +234,12 @@ ssize_t list_find(list_t list, list_val_t value) {
     return -1;
 }
 
-/* 
+/*
  * Checks whether the provided list contains the value provided. Returns true
  * if value is in the list, returns false if it is not.
  */
-bool list_contains(list_t list, list_val_t value) {
+bool list_contains(list_t list, list_val_t value)
+{
     node_t *curr = list.head;
     node_t *prev = NULL;
 
@@ -241,21 +264,24 @@ bool list_contains(list_t list, list_val_t value) {
 /*
  * Calculates the new link for a node. Useful for insertions and removals.
  */
-static node_t *calc_new_ptr(void *a, void *b, void *c) {
+static node_t *calc_new_ptr(void *a, void *b, void *c)
+{
     return (node_t *)((intptr_t)(a) ^ (intptr_t)(b) ^ (intptr_t)(c));
 }
 
 /*
  * Returns the next item in the list after curr.
  */
-static node_t *list_next(node_t *curr, node_t *prev) {
+static node_t *list_next(node_t *curr, node_t *prev)
+{
     return calc_new_ptr(prev, curr->link, NULL);
 }
 
 /*
  * Returns the previous item in the list before curr.
  */
-static node_t *list_prev(node_t *curr, node_t *next) {
+static node_t *list_prev(node_t *curr, node_t *next)
+{
     return calc_new_ptr(NULL, curr->link, next);
 }
 
@@ -263,10 +289,13 @@ static node_t *list_prev(node_t *curr, node_t *next) {
  * Add a node with a given value between two given nodes.
  */
 static bool add_at_node(list_t *list, list_val_t value,
-                        node_t *before, node_t *after) {
+                        node_t *before, node_t *after)
+{
     /* Allocate and initialize the new node. */
     node_t *new_node = malloc(sizeof(node_t));
-    if (!new_node) return false;
+    if (!new_node) {
+        return false;
+    }
 
     new_node->value = value;
 
@@ -284,7 +313,8 @@ static bool add_at_node(list_t *list, list_val_t value,
  * Traverses the list and returns the node at the specified index. This is
  * only useful when the index is actually known.
  */
-static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
+static node_pair_t traverse_to_idx(list_t *list, size_t idx)
+{
     node_t *starting_end;
     size_t num_iter;
 

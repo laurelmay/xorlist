@@ -3,7 +3,8 @@
 
 #include "list.h"
 
-int main(void) {
+int main(void)
+{
 
     list_t *list = list_create();
 
