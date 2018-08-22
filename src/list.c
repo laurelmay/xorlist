@@ -118,12 +118,28 @@ bool list_append(list_t *list, list_val_t value)
 }
 
 /*
+ * Enqueues the item. Alias for list_append
+ */
+bool list_enqueue(list_t *list, list_val_t value)
+{
+    return list_append(list, value);
+}
+
+/*
  * Adds an item to the beginning of list. Returns true if the item was added
  * successfully; returns false otherwise.
  */
 bool list_prepend(list_t *list, list_val_t value)
 {
     return add_at_node(list, value, list->head, list_next(list->head, NULL));
+}
+
+/*
+ * Pushes the item to the list. Alias for list_prepend
+ */
+bool list_push(list_t *list, list_val_t value)
+{
+    return list_prepend(list, value);
 }
 
 /* Returns true if the list is empty, false otherwise. */
@@ -158,6 +174,22 @@ list_val_t list_delete(list_t *list, size_t idx)
     return val;
 }
 
+/*
+ * Removes and returns the first item from the front of the list
+ */
+list_val_t list_pop(list_t *list)
+{
+    return list_delete(list, 0);
+}
+
+/*
+ * Removes and returns the last item from the list.
+ */
+list_val_t list_dequeue(list_t *list)
+{
+    return list_delete(list, 0);
+}
+
 /* Returns the item at idx in list. */
 list_val_t list_get(list_t list, size_t idx)
 {
@@ -171,6 +203,14 @@ list_val_t list_get(list_t list, size_t idx)
     }
 
     return nodes.curr->value;
+}
+
+/*
+ * Returns the item from the front of the list
+ */
+list_val_t list_peek(list_t list)
+{
+    return list_get(list, 0);
 }
 
 /* Changes the value at a selected index. */

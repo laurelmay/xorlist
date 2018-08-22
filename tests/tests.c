@@ -19,6 +19,7 @@ START_TEST(LIST_CREATE)
 }
 END_TEST
 
+
 START_TEST(LIST_INSERT)
 {
     list_t *list = list_create();
@@ -82,12 +83,37 @@ START_TEST(LIST_APPEND)
 END_TEST
 
 
+START_TEST(LIST_ENQUEUE)
+{
+    list_t *list = list_create();
+
+    ck_assert(list_enqueue(list, 1));
+    ck_assert(list_get(*list, 0) == 1);
+
+    list_destroy(list);
+}
+END_TEST
+
+
 START_TEST(LIST_PREPEND)
 {
     list_t *list = list_create();
     ck_assert(list_prepend(list, 2));
     ck_assert(list_get(*list, 0) == 2);
     ck_assert(list_prepend(list, 1));
+    ck_assert(list_get(*list, 0) == 1);
+
+    list_destroy(list);
+}
+END_TEST
+
+
+START_TEST(LIST_PUSH)
+{
+    list_t *list = list_create();
+    ck_assert(list_push(list, 2));
+    ck_assert(list_get(*list, 0) == 2);
+    ck_assert(list_push(list, 1));
     ck_assert(list_get(*list, 0) == 1);
 
     list_destroy(list);
@@ -128,6 +154,38 @@ START_TEST(LIST_DELETE)
 END_TEST
 
 
+START_TEST(LIST_DEQUEUE)
+{
+    list_t *list = list_create();
+    ck_assert(list->size == 0);
+
+    for (int i = 0; i < 5; i++) {
+        list_enqueue(list, i);
+    }
+    for (int i = 0; i < 5; i++) {
+        ck_assert(list_dequeue(list) == i);
+    }
+    list_destroy(list);
+}
+END_TEST
+
+
+START_TEST(LIST_POP)
+{
+    list_t *list = list_create();
+    ck_assert(list->size == 0);
+
+    for (int i = 0; i < 5; i++) {
+        list_push(list, i);
+    }
+    for (int i = 0; i < 5; i++) {
+        ck_assert(list_pop(list) == 4 - i);
+    }
+    list_destroy(list);
+}
+END_TEST
+
+
 START_TEST(LIST_GET)
 {
     list_t *list = list_create();
@@ -139,6 +197,24 @@ START_TEST(LIST_GET)
 
     for (int i = 0; i < 10; i++) {
         ck_assert(list_get(*list, i) == i);
+    }
+
+    list_destroy(list);
+}
+END_TEST
+
+
+START_TEST(LIST_PEEK)
+{
+    list_t *list = list_create();
+    ck_assert(list_peek(*list) == -1);
+
+    for (int i = 0; i < 10; i++) {
+        list_append(list, i);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        ck_assert(list_peek(*list) == list_pop(list));
     }
 
     list_destroy(list);
@@ -165,6 +241,7 @@ START_TEST(LIST_SET)
     list_destroy(list);
 }
 END_TEST
+
 
 START_TEST(LIST_SIZE) {
     list_t *list = list_create();
@@ -257,13 +334,18 @@ void tests (Suite *s) {
     tcase_add_test(tests, LIST_INSERT);
     tcase_add_test(tests, LIST_INSERT_INDEX);
     tcase_add_test(tests, LIST_APPEND);
+    tcase_add_test(tests, LIST_ENQUEUE);
     tcase_add_test(tests, LIST_PREPEND);
+    tcase_add_test(tests, LIST_PUSH);
     tcase_add_test(tests, LIST_EMPTY);
     tcase_add_test(tests, LIST_DELETE);
     tcase_add_test(tests, LIST_GET);
+    tcase_add_test(tests, LIST_PEEK);
     tcase_add_test(tests, LIST_SET);
     tcase_add_test(tests, LIST_SIZE);
     tcase_add_test(tests, LIST_REMOVE);
+    tcase_add_test(tests, LIST_POP);
+    tcase_add_test(tests, LIST_DEQUEUE);
     tcase_add_test(tests, LIST_FIND);
     tcase_add_test(tests, LIST_CONTAINS);
     suite_add_tcase(s, tests);
