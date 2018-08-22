@@ -13,7 +13,9 @@ INC  = -I$(INCDIR)
 
 EXE=list_test
 
-all: $(EXE)
+all: libs
+
+libs: $(OBJS)
 
 tests:
 	make -C tests
