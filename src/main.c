@@ -13,41 +13,41 @@ int main(void)
     printf("&head = %p\n", (void *)list->head);
     printf("&tail = %p\n", (void *)list->tail);
 
-    printf("Get idx 0?: %d\n", list_get(*list, 0));
+    printf("Get idx 0?: %p\n", list_get(*list, 0));
 
     printf("\n== Add to list ==\n");
-    for (int i = 1; i <= 10; i++) {
-        list_append(list, i);
+    for (size_t i = 1; i <= 10; i++) {
+        list_append(list, (void *)i);
     }
 
-    list_insert(list, 4, 400);
-    list_insert(list, 6, 600);
+    list_insert(list, 4, (void *)400);
+    list_insert(list, 6, (void *) 600);
 
     printf("\n== Get each item==\n");
-    for (int i = 0; i < 12; i++) {
-        int32_t val = list_get(*list, i);
-        printf("%d: %d\n", i, val);
+    for (size_t i = 0; i < 12; i++) {
+        void *val = list_get(*list, i);
+        printf("%ld: %p\n", i, val);
     }
 
     printf("\n== Find each item==\n");
-    for (int i = 1; i <= 10; i++) {
-        size_t loc = list_find(*list, i);
-        printf("%d @ %ld\n", i, loc);
+    for (size_t i = 1; i <= 10; i++) {
+        size_t loc = list_find(*list, (void *)i);
+        printf("%ld @ %ld\n", i, loc);
     }
 
-    printf("%d @ %ld\n", 400, list_find(*list, 400));
-    printf("%d @ %ld\n", 600, list_find(*list, 600));
+    printf("%d @ %ld\n", 400, list_find(*list, (void *)400));
+    printf("%d @ %ld\n", 600, list_find(*list, (void *)600));
 
     printf("\n== Delete each item==\n");
-    for (int i = 11; i >= 0; i--) {
-        int32_t val = list_delete(list, i);
-        printf("%d: %d\n", i, val);
+    for (size_t i = 0; i <= 11; i++) {
+        void *val = list_delete(list, 0);
+        printf("%ld: %p\n", i, val);
     }
 
     printf("\n");
     printf("empty?: %s\n", list_is_empty(*list) ? "Yes" : "No");
 
-    printf("Get idx 0?: %d\n", list_get(*list, 0));
+    printf("Get idx 0?: %p\n", list_get(*list, 0));
 
     printf("Destroying list.\n");
 
