@@ -194,12 +194,12 @@ list_val_t list_dequeue(list_t *list)
 list_val_t list_get(list_t list, size_t idx)
 {
     if (idx >= list.size) {
-        return -1;
+        return NULL;
     }
 
     node_pair_t nodes = traverse_to_idx(&list, idx);
     if (!nodes.prev || !nodes.curr) {
-        return -1;
+        return NULL;
     }
 
     return nodes.curr->value;

@@ -9,8 +9,11 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-/* Adjust this typedef to change the types of values stored in the list. */
-typedef int32_t list_val_t;
+/*
+ * This list stores pointers. It is the responsibility of the caller to ensure
+ * the pointers stored in the list are valid.
+ */
+typedef void* list_val_t;
 
 
 /* Exported structs */
@@ -23,6 +26,7 @@ typedef struct node {
     struct node* link;
     list_val_t value;
 } node_t;
+
 
 typedef struct {
     node_t *head;
