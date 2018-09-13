@@ -20,6 +20,8 @@ libs: $(OBJS)
 tests:
 	make -C tests
 
+exe: $(EXE)
+
 $(EXE): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
