@@ -1,3 +1,5 @@
+# Adapted from https://github.com/JMU-CS/c-test-framework/blob/master/ref/pT-blank/tests/Makefile
+
 CC=gcc
 
 override CFLAGS := -g -O0 -Wall -pedantic -std=c99 $(CFLAGS)
@@ -13,14 +15,20 @@ OBJS=$(patsubst $(SRCDIR)/%,$(OUTDIR)/%,$(SRCS:.c=.o))
 INC=-I$(INCDIR)
 MODS=tests.o
 
-EXE=../list_test
 TEST=testsuite
 LIBS=-lcheck -lm -lrt -lsubunit
+UTESTOUT=utests.txt
 
-all: $(TEST)
+all: test
 
 $(EXE): $(OBJS)
 	make -C ../
+
+test: $(EXE) $(TEST)
+	@echo "========================================"
+	@echo "             UNIT TESTS                 "
+	@./$(TEST) 2>/dev/null | sed -n -e '/Checks/,$$p' | sed -e 's/^private.*:[EF]://g'
+	@echo "========================================"
 
 $(TEST): $(TEST).o $(MODS) $(OBJS)
 	$(CC) $(LDFLAGS) -o $(TEST) $^ $(LIBS)
@@ -33,6 +41,6 @@ $(OUTDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) -c $(CFLAGS) $(INC) $< -o $@
 
 clean:
-	rm -rf *.o testsuite
+	rm -rf *.o testsuite utests.txt
 
 .PHONY: all $(EXE) default clean

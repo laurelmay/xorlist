@@ -6,6 +6,10 @@
 
 #include "list.h"
 
+typedef struct data {
+    int val;
+} data_t;
+
 START_TEST(LIST_CREATE)
 {
     list_t *list = list_create();
@@ -24,10 +28,13 @@ START_TEST(LIST_INSERT)
 {
     list_t *list = list_create();
 
-    ck_assert(!list_insert(list, 10, 1));
-    ck_assert(!list_insert(list, -1, 1));
+    data_t one = { .val = 1 };
 
-    list_val_t value = 1234;
+    ck_assert(!list_insert(list, 10, &one));
+    ck_assert(!list_insert(list, -1, &one));
+
+    data_t dat = { .val = 1234 };
+    list_val_t value = &dat;
 
     ck_assert(list_insert(list, 0, value));
     ck_assert(list_get(*list, 0) == value);
@@ -46,24 +53,30 @@ END_TEST
 START_TEST(LIST_INSERT_INDEX)
 {
     list_t *list = list_create();
+    data_t values[10];
 
     for (int i = 0; i < 10; i++) {
-        list_append(list, i);
+        values[i] = (data_t){ .val = i };
+        list_append(list, values + i);
     }
 
-    list_insert(list, 4, 400);
-    list_insert(list, 6, 600);
+
+    data_t four_hundred = { .val = 400 };
+    data_t six_hundred = { .val = 600 };
+    
+    list_insert(list, 4, &four_hundred);
+    list_insert(list, 6, &six_hundred);
 
     for (int i = 0; i < 4; i++) {
-        ck_assert(list_get(*list, i) == i);
+        ck_assert(list_get(*list, i) == values + i);
     }
 
-    ck_assert(list_get(*list, 4) == 400);
-    ck_assert(list_get(*list, 5) == 4);
-    ck_assert(list_get(*list, 6) == 600);
+    ck_assert(list_get(*list, 4) == &four_hundred);
+    ck_assert(list_get(*list, 5) == values + 4);
+    ck_assert(list_get(*list, 6) == &six_hundred);
 
     for (int i = 7; i < list_size(*list); i++) {
-        ck_assert(list_get(*list, i) == (i - 2));
+        ck_assert(list_get(*list, i) == values + (i - 2));
     }
 
     list_destroy(list);
@@ -75,8 +88,10 @@ START_TEST(LIST_APPEND)
 {
     list_t *list = list_create();
 
-    ck_assert(list_append(list, 1));
-    ck_assert(list_get(*list, 0) == 1);
+    data_t one = { .val = 1 };
+
+    ck_assert(list_append(list, &one));
+    ck_assert(list_get(*list, 0) == &one);
 
     list_destroy(list);
 }
@@ -87,8 +102,9 @@ START_TEST(LIST_ENQUEUE)
 {
     list_t *list = list_create();
 
-    ck_assert(list_enqueue(list, 1));
-    ck_assert(list_get(*list, 0) == 1);
+    data_t one = { .val = 1 };
+    ck_assert(list_enqueue(list, &one));
+    ck_assert(list_get(*list, 0) == &one);
 
     list_destroy(list);
 }
@@ -98,10 +114,12 @@ END_TEST
 START_TEST(LIST_PREPEND)
 {
     list_t *list = list_create();
-    ck_assert(list_prepend(list, 2));
-    ck_assert(list_get(*list, 0) == 2);
-    ck_assert(list_prepend(list, 1));
-    ck_assert(list_get(*list, 0) == 1);
+    data_t one = { .val = 1 };
+    data_t two = { .val = 2 };
+    ck_assert(list_prepend(list, &two));
+    ck_assert(list_get(*list, 0) == &two);
+    ck_assert(list_prepend(list, &one));
+    ck_assert(list_get(*list, 0) == &one);
 
     list_destroy(list);
 }
@@ -111,10 +129,12 @@ END_TEST
 START_TEST(LIST_PUSH)
 {
     list_t *list = list_create();
-    ck_assert(list_push(list, 2));
-    ck_assert(list_get(*list, 0) == 2);
-    ck_assert(list_push(list, 1));
-    ck_assert(list_get(*list, 0) == 1);
+    data_t one = { .val = 1 };
+    data_t two = { .val = 2 };
+    ck_assert(list_push(list, &two));
+    ck_assert(list_get(*list, 0) == &two);
+    ck_assert(list_push(list, &one));
+    ck_assert(list_get(*list, 0) == &one);
 
     list_destroy(list);
 }
@@ -127,7 +147,8 @@ START_TEST(LIST_EMPTY)
 
     ck_assert(list_is_empty(*list));
 
-    list_append(list, 1);
+    data_t one = { .val = 1 };
+    list_append(list, &one);
 
     ck_assert(!list_is_empty(*list));
 
@@ -144,8 +165,9 @@ END_TEST
 START_TEST(LIST_DELETE)
 {
     list_t *list = list_create();
+    data_t one = { .val = 1 };
     ck_assert(list->size == 0);
-    list_append(list, 1);
+    list_append(list, &one);
     ck_assert(list->size == 1);
     list_delete(list, 0);
     ck_assert(list->size == 0);
@@ -159,11 +181,13 @@ START_TEST(LIST_DEQUEUE)
     list_t *list = list_create();
     ck_assert(list->size == 0);
 
+    data_t values[5];
     for (int i = 0; i < 5; i++) {
-        list_enqueue(list, i);
+        values[i] = (data_t){ .val = i };
+        list_enqueue(list, values + i);
     }
     for (int i = 0; i < 5; i++) {
-        ck_assert(list_dequeue(list) == i);
+        ck_assert(list_dequeue(list) == values + i);
     }
     list_destroy(list);
 }
@@ -175,11 +199,13 @@ START_TEST(LIST_POP)
     list_t *list = list_create();
     ck_assert(list->size == 0);
 
+    data_t values[5];
     for (int i = 0; i < 5; i++) {
-        list_push(list, i);
+        values[i] = (data_t) { .val = i };
+        list_push(list, values + i);
     }
     for (int i = 0; i < 5; i++) {
-        ck_assert(list_pop(list) == 4 - i);
+        ck_assert(list_pop(list) == values + (4 - i));
     }
     list_destroy(list);
 }
@@ -189,14 +215,16 @@ END_TEST
 START_TEST(LIST_GET)
 {
     list_t *list = list_create();
-    ck_assert(list_get(*list, 0) == -1);
+    ck_assert(list_get(*list, 0) == NULL);
 
+    data_t values[10];
     for (int i = 0; i < 10; i++) {
-        list_append(list, i);
+        values[i] = (data_t) { .val = i };
+        list_append(list, values + i);
     }
 
     for (int i = 0; i < 10; i++) {
-        ck_assert(list_get(*list, i) == i);
+        ck_assert(list_get(*list, i) == values + i);
     }
 
     list_destroy(list);
@@ -207,10 +235,10 @@ END_TEST
 START_TEST(LIST_PEEK)
 {
     list_t *list = list_create();
-    ck_assert(list_peek(*list) == -1);
+    ck_assert(list_peek(*list) == NULL);
 
     for (int i = 0; i < 10; i++) {
-        list_append(list, i);
+        list_append(list, &(data_t) { .val = i });
     }
 
     for (int i = 0; i < 10; i++) {
@@ -226,16 +254,18 @@ START_TEST(LIST_SET)
 {
     list_t *list = list_create();
 
+    data_t values[10];
     for (int i = 0; i < 10; i++) {
-        list_append(list, i);
+        values[i] = (data_t) { .val = i };
+        list_append(list, values + i);
     }
 
     for (int i = 0; i < 10; i++) {
-        list_set(list, i, i * 2);
+        list_set(list, i, values + 10 - i);
     }
 
     for (int i = 0; i < 10; i++) {
-        ck_assert(list_get(*list, i) == i * 2);
+        ck_assert(list_get(*list, i) == values + 10 - i);
     }
 
     list_destroy(list);
@@ -249,7 +279,7 @@ START_TEST(LIST_SIZE) {
     size_t items = 0;
 
     for (int i = 0; i < 50; i++) {
-        if (list_append(list, i)) {
+        if (list_append(list, &(data_t) { .val = i })) {
             items++;
         }
     }
@@ -272,14 +302,19 @@ START_TEST(LIST_REMOVE)
 {
     list_t *list = list_create();
 
+    data_t values[50];
+    for (int i = 0; i < 50; i++) {
+        values[i] = (data_t) { .val = i };
+    }
+
     for (int i = 0; i < 10; i++) {
-        list_append(list, (i + 2) * 2);
+        list_append(list, values + ((i + 2) * 2));
     }
 
     ck_assert(list_size(*list) == 10);
 
     for (int i = 0; i < 10; i++) {
-        int val = (i + 2) * 2;
+        data_t *val = values + ((i + 2) * 2);
         ssize_t idx = list_remove(list, val);
         ck_assert(idx == 0);
     }
@@ -295,12 +330,17 @@ START_TEST(LIST_FIND)
 {
     list_t *list = list_create();
 
-    for (int i = 0; i < 10; i++) {
-        list_append(list, (i + 2) * 2);
+    data_t values[50];
+    for (int i = 0; i < 50; i++) {
+        values[i] = (data_t) { .val = i };
     }
 
     for (int i = 0; i < 10; i++) {
-        int val = (i + 2) * 2;
+        list_append(list, values + ((i + 2) * 2));
+    }
+
+    for (int i = 0; i < 10; i++) {
+        data_t *val = values + ((i + 2) * 2);
         ssize_t idx = list_find(*list, val);
         ck_assert(idx == i);
     }
@@ -314,12 +354,17 @@ START_TEST(LIST_CONTAINS)
 {
     list_t *list = list_create();
 
-    for (int i = 0; i < 10; i++) {
-        list_append(list, (i + 2) * 2);
+    data_t values[50];
+    for (int i = 0; i < 50; i++) {
+        values[i] = (data_t) { .val = i };
     }
 
     for (int i = 0; i < 10; i++) {
-        int val = (i + 2) * 2;
+        list_append(list, values + ((i + 2) * 2));
+    }
+
+    for (int i = 0; i < 10; i++) {
+        data_t *val = values + ((i + 2) * 2);
         ck_assert(list_contains(*list, val));
     }
 

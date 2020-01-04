@@ -17,7 +17,7 @@ all: libs
 
 libs: $(OBJS)
 
-tests:
+test:
 	make -C tests
 
 exe: $(EXE)
