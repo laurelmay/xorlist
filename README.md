@@ -67,3 +67,10 @@ M->link = &P ^ &Q
 This data structure is remarkably difficult to debug. In several cases, I've
 found that just adding `printf`s in various places is honestly easier than
 trying to work around all the XOR and pointer weirdness in GDB.
+
+## Installing
+
+A typical `make && sudo make install` will work on most Linux distros (though be careful! `/usr/`
+will be modified). For ArchLinux users, a `PKGBUILD` is provided. You can build with `makepkg -si`
+to install the latest released version. This package is not currently available in the Arch repos
+or the AUR.
