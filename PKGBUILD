@@ -8,7 +8,7 @@ arch=("x86_64")
 url="https://github.com/kylelaker/xorlist"
 license=(MIT)
 depends=()
-makedepends=()
+makedepends=(check subunit)
 source=("${url}/archive/v${pkgver}.tar.gz")
 sha512sums=('SKIP')
 
