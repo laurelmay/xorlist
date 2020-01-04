@@ -25,4 +25,5 @@ check() {
 package() {
   cd "$srcdir/$pkgname-${pkgver}"
   make DESTDIR="$pkgdir" install
+  install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/$pkgname/LICENSE"
 }
