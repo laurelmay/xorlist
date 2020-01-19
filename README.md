@@ -18,9 +18,9 @@ must be known.
 For example:
 
 ```
-|------|    |---|    |---|    |---|    |------|
++------+    +---+    +---+    +---+    +------+
 | HEAD |<-->| A |<-->| B |<-->| C |<-->| TAIL |
-|------|    |---|    |---|    |---|    |------|
++------+    +---+    +---+    +---+    +------+
 ```
 
 Finding B requires knowing the addresses of A and HEAD. It would be
@@ -43,9 +43,9 @@ If an element D were inserted between B and C, the list would then look
 like:
 
 ```
-|------|    |---|    |---|    |---|    |---|    |------|
++------+    +---+    +---+    +---+    +---+    +------+
 | HEAD |<-->| A |<-->| B |<-->| D |<-->| C |<-->| TAIL |
-|------|    |---|    |---|    |---|    |---|    |------|
++------+    +---+    +---+    +---+    +---+    +------+
 ```
 
 And the following links would be different:
