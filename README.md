@@ -33,7 +33,7 @@ In the above example:
 
 | Field      | Value       |
 |------------|-------------|
-| HEAD->link | `NULL ^  &B`|
+| HEAD->link | `NULL ^ &A` |
 | A->link    | `&HEAD ^ &B`|
 | B->link    | `&A ^ &B`   |
 | C->link    | `&B ^ &TAIL`|
@@ -63,10 +63,6 @@ P->link = P->link ^ &Q ^ &M
 Q->link = Q->link ^ &P ^ &M
 M->link = &P ^ &Q
 ```
-
-This data structure is remarkably difficult to debug. In several cases, I've
-found that just adding `printf`s in various places is honestly easier than
-trying to work around all the XOR and pointer weirdness in GDB.
 
 ## Installing
 
