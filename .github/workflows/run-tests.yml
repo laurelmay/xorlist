@@ -1,0 +1,39 @@
+name: Run Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  runTest:
+    runs-on: ubuntu-latest
+    name: Unit Tests
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install libsubunit-dev check
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Project
+        run: |
+          make
+      - name: Execute Tests
+        run: |
+          make test
+      - name: Print test output
+        run: |
+          cat tests/utests.txt
+      - name: Build executable
+        run: |
+          make exe
+      - name: Run sample executable
+        run: |
+          ./list_test
+      - name: Collect artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: |
+            tests/utest.txt
+            build/*
+            list_test
