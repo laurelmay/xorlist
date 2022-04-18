@@ -56,7 +56,14 @@ typedef struct
     size_t size;
 } list_t;
 
-typedef void (*element_destructor)(void *);
+/**
+ * @brief A function to tear-down elements in a list
+ * 
+ * This should accept a \ref list_val_t and properly teardown/destruct the
+ * item, including passing it to `free(void *)` if needed.
+ * 
+ */
+typedef void (*element_destructor)(list_val_t);
 
 /* Exported list functions */
 list_t *list_create();

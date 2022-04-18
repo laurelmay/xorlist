@@ -86,12 +86,12 @@ list_t *list_create()
  * the individual items that are stored are not directly passed to free as
  * they may be stack-allocated or require more complicated tear-down. These
  * can be passed to the destroy argument which shoud accept a single
- * (void *) as an argument (for example, free(void *)).
+ * \ref list_val_t as an argument (for example, `free(void *)`).
  *
  * @param list The list to tear down
- * @param destroy A function to properly free list elements (or NULL)
+ * @param destroy A function to properly free list elements (or `NULL`)
  */
-void list_destroy(list_t *list, void (*destroy)(void *))
+void list_destroy(list_t *list, element_destructor destroy)
 {
     /* Destroy all remaining items in the list. */
     while (list->size > 0)

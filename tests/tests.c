@@ -11,7 +11,7 @@ typedef struct data {
 } data_t;
 
 static int destroy_count = 0;
-void destroy_counter(void *_) {
+void destroy_counter(list_val_t _) {
     destroy_count += 1;
 }
 
