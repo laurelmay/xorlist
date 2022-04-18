@@ -9,6 +9,8 @@ INCDIR = include
 PREFIX = /usr
 DOCDIR = docs
 DOCS   = $(DOCDIR)/html/index.html
+CSSURL = https://raw.githubusercontent.com/jothepro/doxygen-awesome-css/main/doxygen-awesome.css
+CSSFILE = doxygen-awesome.css
 
 SRCS = $(shell find $(SRCDIR) -type f -name *.c)
 OBJS = $(patsubst $(SRCDIR)/%,$(OUTDIR)/%,$(SRCS:.c=.o))
@@ -44,7 +46,10 @@ install: $(SHOBJS)
 
 docs: $(DOCS)
 
-$(DOCS): $(OBJS) $(SHOBJS)
+$(CSSFILE):
+	curl -sL -o $(CSSFILE) $(CSSURL)
+
+$(DOCS): $(OBJS) $(SHOBJS) $(CSSFILE)
 	@doxygen
 
 clean:
