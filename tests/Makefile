@@ -1,8 +1,8 @@
 # Adapted from https://github.com/JMU-CS/c-test-framework/blob/master/ref/pT-blank/tests/Makefile
 
-CC=gcc
+CC=clang
 
-override CFLAGS := -g -O0 -Wall -pedantic -std=c99 $(CFLAGS)
+override CFLAGS := -g -O0 -Wall -pedantic -std=c17 $(CFLAGS)
 override LDFLAGS := -g -O0 $(LDFLAGS)
 
 SRCDIR=../src
