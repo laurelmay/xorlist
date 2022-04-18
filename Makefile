@@ -7,6 +7,8 @@ SRCDIR = src
 OUTDIR = build
 INCDIR = include
 PREFIX = /usr
+DOCDIR = docs
+DOCS   = $(DOCDIR)/html/index.html
 
 SRCS = $(shell find $(SRCDIR) -type f -name *.c)
 OBJS = $(patsubst $(SRCDIR)/%,$(OUTDIR)/%,$(SRCS:.c=.o))
@@ -40,8 +42,13 @@ install: $(SHOBJS)
 	install -d $(DESTDIR)$(PREFIX)/include/xorlist
 	install -m 644 $(INCDIR)/* $(DESTDIR)$(PREFIX)/include/xorlist/
 
+docs: $(DOCS)
+
+$(DOCS): $(OBJS) $(SHOBJS)
+	@doxygen
+
 clean:
-	rm -rf $(OUTDIR) list_test
+	rm -rf $(OUTDIR) list_test docs/
 	make -C tests clean
 
 .PHONY: all default clean tests install

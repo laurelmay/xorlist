@@ -17,7 +17,6 @@ MODS=tests.o
 
 TEST=testsuite
 LIBS=-lcheck -lm -lrt -lsubunit
-UTESTOUT=utests.txt
 
 all: test
 
@@ -27,7 +26,7 @@ $(EXE): $(OBJS)
 test: $(EXE) $(TEST)
 	@echo "========================================"
 	@echo "             UNIT TESTS                 "
-	@./$(TEST) 2>/dev/null | sed -n -e '/Checks/,$$p' | sed -e 's/^private.*:[EF]://g'
+	@./$(TEST) 2>/dev/null | sed -n -e '/Checks/,$$p'
 	@echo "========================================"
 
 $(TEST): $(TEST).o $(MODS) $(OBJS)
