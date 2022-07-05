@@ -1,0 +1,4 @@
+-Iinclude
+-Wall
+--std=c17
+-pedantic
