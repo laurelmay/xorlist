@@ -1,5 +1,5 @@
 #include <stdbool.h>
-#include <stdio.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
@@ -15,16 +15,16 @@ Suite * test_suite (void) {
     return s;
 }
 
-void run_testsuite() {
-    Suite *s = test_suite ();
-    SRunner *sr = srunner_create (s);
-    srunner_run_all (sr, CK_NORMAL);
-    srunner_free (sr);
+void run_testsuite(void) {
+    Suite *s = test_suite();
+    SRunner *sr = srunner_create(s);
+    srunner_run_all(sr, CK_NORMAL);
+    srunner_free(sr);
 }
 
 int main(void) {
-    srand((unsigned)time(NULL));
-    run_testsuite ();
+    srand((unsigned) time(nullptr));
+    run_testsuite();
     return EXIT_SUCCESS;
 }
 

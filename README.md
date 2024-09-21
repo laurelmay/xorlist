@@ -79,6 +79,11 @@ HEAD->link ^= TAIL->link
 
 ## Installing
 
+### Dependencies
+
+- `subunit`
+- `libcheck`
+
 A typical `make && sudo make install` will work on most Linux distros (though
 be careful! `/usr/` will be modified). For ArchLinux users, a `PKGBUILD` is
 provided. You can build with `makepkg -si` to install the latest released

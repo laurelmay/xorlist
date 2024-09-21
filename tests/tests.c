@@ -1,6 +1,6 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 
 #include <check.h>
 
@@ -22,7 +22,7 @@ START_TEST(LIST_CREATE)
 
     ck_assert(list->size == 0);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -32,7 +32,7 @@ START_TEST(LIST_DESTROY)
     ck_assert(list);
 
     size_t items = 10;
-    for (size_t i = 0; i < items; i++) list_append(list, NULL);
+    for (size_t i = 0; i < items; i++) list_append(list, nullptr);
 
     destroy_count = 0;
     list_destroy(list, destroy_counter);
@@ -68,8 +68,8 @@ START_TEST(LIST_INSERT)
 
     ck_assert_msg(!list_insert(list, 0, value), "Adding at a valid index (0) succeeds");
     ck_assert(list_get(*list, 0) == value);
-    
-    list_destroy(list, NULL);
+
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -103,7 +103,7 @@ START_TEST(LIST_INSERT_INDEX)
         ck_assert(list_get(*list, i) == values + (i - 2));
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -117,7 +117,7 @@ START_TEST(LIST_APPEND)
     ck_assert(!list_append(list, &one));
     ck_assert(list_get(*list, 0) == &one);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -130,7 +130,7 @@ START_TEST(LIST_ENQUEUE)
     ck_assert(!list_enqueue(list, &one));
     ck_assert(list_get(*list, 0) == &one);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -145,7 +145,7 @@ START_TEST(LIST_PREPEND)
     ck_assert(!list_prepend(list, &one));
     ck_assert(list_get(*list, 0) == &one);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -160,7 +160,7 @@ START_TEST(LIST_PUSH)
     ck_assert(!list_push(list, &one));
     ck_assert(list_get(*list, 0) == &one);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -180,7 +180,7 @@ START_TEST(LIST_EMPTY)
 
     ck_assert(list_is_empty(*list));
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 
 }
 END_TEST
@@ -195,7 +195,7 @@ START_TEST(LIST_DELETE)
     ck_assert(list->size == 1);
     list_delete(list, 0);
     ck_assert(list->size == 0);
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -213,7 +213,7 @@ START_TEST(LIST_DEQUEUE)
     for (int i = 0; i < 5; i++) {
         ck_assert(list_dequeue(list) == values + i);
     }
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -231,7 +231,7 @@ START_TEST(LIST_POP)
     for (int i = 0; i < 5; i++) {
         ck_assert(list_pop(list) == values + (4 - i));
     }
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -239,7 +239,7 @@ END_TEST
 START_TEST(LIST_GET)
 {
     list_t *list = list_create();
-    ck_assert(list_get(*list, 0) == NULL);
+    ck_assert(list_get(*list, 0) == nullptr);
 
     data_t values[10];
     for (int i = 0; i < 10; i++) {
@@ -251,7 +251,7 @@ START_TEST(LIST_GET)
         ck_assert(list_get(*list, i) == values + i);
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -259,7 +259,7 @@ END_TEST
 START_TEST(LIST_PEEK)
 {
     list_t *list = list_create();
-    ck_assert(list_peek(*list) == NULL);
+    ck_assert(list_peek(*list) == nullptr);
 
     for (int i = 0; i < 10; i++) {
         list_append(list, &(data_t) { .val = i });
@@ -269,7 +269,7 @@ START_TEST(LIST_PEEK)
         ck_assert(list_peek(*list) == list_pop(list));
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -292,7 +292,7 @@ START_TEST(LIST_SET)
         ck_assert(list_get(*list, i) == values + 10 - i);
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -316,7 +316,7 @@ START_TEST(LIST_SIZE) {
 
     ck_assert(list_size(*list) == items);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -344,7 +344,7 @@ START_TEST(LIST_REMOVE)
 
     ck_assert(list_size(*list) == 0);
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -368,7 +368,7 @@ START_TEST(LIST_FIND)
         ck_assert(idx == i);
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 
@@ -391,7 +391,7 @@ START_TEST(LIST_CONTAINS)
         ck_assert(list_contains(*list, val));
     }
 
-    list_destroy(list, NULL);
+    list_destroy(list, nullptr);
 }
 END_TEST
 

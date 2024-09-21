@@ -1,6 +1,6 @@
 /**
  * @file list.h
- * @author Kyle Laker (kyle@laker.email)
+ * @author Laurel May (laurel@laurelmay.me)
  *
  * @copyright Copyright (c) 2022
  *
@@ -66,7 +66,7 @@ typedef struct
 typedef void (*element_destructor)(list_val_t);
 
 /* Exported list functions */
-list_t *list_create();
+list_t *list_create(void);
 void list_destroy(list_t *, element_destructor);
 int list_insert(list_t *, size_t, list_val_t);
 int list_append(list_t *, list_val_t);

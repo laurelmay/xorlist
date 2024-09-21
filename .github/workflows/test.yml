@@ -10,7 +10,7 @@ on:
 jobs:
   buildAndTest:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,24 +28,3 @@ jobs:
         # Ubuntu
         run: |
           make LDFLAGS="`pkg-config --cflags --libs check`" test
-
-  buildDocs:
-    name: Build docs
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Install doxygen
-        run: |
-          sudo apt install -y doxygen
-
-      - name: Build docs
-        run: |
-          doxygen
-
-      - name: Preserve docs
-        uses: actions/upload-artifact@v3
-        with:
-          path: docs/html/
-          name: docs

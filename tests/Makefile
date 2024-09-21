@@ -2,7 +2,7 @@
 
 CC=clang
 
-override CFLAGS := -g -O0 -Wall -pedantic -std=c17 $(CFLAGS)
+override CFLAGS := -g -O0 -Wall -pedantic -std=c23 $(CFLAGS)
 override LDFLAGS := -g -O0 $(LDFLAGS)
 
 SRCDIR=../src

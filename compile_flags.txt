@@ -1,4 +1,4 @@
 -Iinclude
 -Wall
---std=c17
+--std=c23
 -pedantic

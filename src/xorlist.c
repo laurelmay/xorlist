@@ -1,7 +1,7 @@
 /**
  * @internal
  * @file xorlist.c
- * @author Kyle Laker (kyle@laker.email)
+ * @author Laurel May (laurel@laurelmay.me)
  *
  * @copyright Copyright (c) 2022
  *
@@ -13,8 +13,8 @@
 #include "list.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -55,17 +55,17 @@ static node_pair_t traverse_to_idx(list_t *, size_t);
  * returned list should not be passed to free directly and should be passed
  * to list_destroy(list_t *, element_destructor).
  */
-list_t *list_create() {
+list_t *list_create(void) {
   list_t *list = malloc(sizeof(list_t));
   node_t *head = malloc(sizeof(node_t));
   node_t *tail = malloc(sizeof(node_t));
 
   if (!list || !head || !tail) {
-    return NULL;
+    return nullptr;
   }
 
-  head->link = calc_new_ptr(NULL, NULL, tail);
-  tail->link = calc_new_ptr(head, NULL, NULL);
+  head->link = calc_new_ptr(nullptr, nullptr, tail);
+  tail->link = calc_new_ptr(head, nullptr, nullptr);
 
   list->head = head;
   list->tail = tail;
@@ -85,7 +85,7 @@ list_t *list_create() {
  * \ref list_val_t as an argument (for example, `free(void *)`).
  *
  * @param list The list to tear down
- * @param destroy A function to properly free list elements (or `NULL`)
+ * @param destroy A function to properly free list elements (or `nullptr`)
  */
 void list_destroy(list_t *list, element_destructor destroy) {
   /* Destroy all remaining items in the list. */
@@ -99,8 +99,8 @@ void list_destroy(list_t *list, element_destructor destroy) {
   /* Free memory for list struct members. */
   free(list->head);
   free(list->tail);
-  list->head = NULL;
-  list->tail = NULL;
+  list->head = nullptr;
+  list->tail = nullptr;
   free(list);
 }
 
@@ -138,7 +138,7 @@ int list_insert(list_t *list, size_t idx, list_val_t value) {
  * @return int A non-zero value on failure
  */
 int list_append(list_t *list, list_val_t value) {
-  return add_at_node(list, value, list_prev(list->tail, NULL), list->tail);
+  return add_at_node(list, value, list_prev(list->tail, nullptr), list->tail);
 }
 
 /**
@@ -162,7 +162,7 @@ int list_enqueue(list_t *list, list_val_t value) {
  * @return int A non-zero value on failure
  */
 int list_prepend(list_t *list, list_val_t value) {
-  return add_at_node(list, value, list->head, list_next(list->head, NULL));
+  return add_at_node(list, value, list->head, list_next(list->head, nullptr));
 }
 
 /**
@@ -196,12 +196,12 @@ bool list_is_empty(list_t list) {
  *
  * @param list The list to remove from
  * @param idx The index to remove at
- * @return list_val_t The item at that index (or NULL for an invalid index)
+ * @return list_val_t The item at that index (or nullptr for an invalid index)
  */
 list_val_t list_delete(list_t *list, size_t idx) {
   node_pair_t nodes = traverse_to_idx(list, idx);
   if (!nodes.prev || !nodes.curr) {
-    return NULL;
+    return nullptr;
   }
 
   node_t *prev = nodes.prev;
@@ -216,7 +216,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
   list_val_t val = curr->value;
 
   free(curr);
-  curr = NULL;
+  curr = nullptr;
   list->size -= 1;
 
   return val;
@@ -228,7 +228,7 @@ list_val_t list_delete(list_t *list, size_t idx) {
  * This is equivalent to list_delete(list_t *, size_t) with an index of 0.
  *
  * @param list The list to remove from
- * @return list_val_t The item at the top of the stack (or NULL if empty)
+ * @return list_val_t The item at the top of the stack (or nullptr if empty)
  */
 list_val_t list_pop(list_t *list) {
   return list_delete(list, 0);
@@ -240,7 +240,7 @@ list_val_t list_pop(list_t *list) {
  * This is equivalent to list_delete(list_t *, size_t) with an index of 0.
  *
  * @param list The queue to remove from
- * @return list_val_t The first item in the queue (or NULL if empty)
+ * @return list_val_t The first item in the queue (or nullptr if empty)
  */
 list_val_t list_dequeue(list_t *list) {
   return list_delete(list, 0);
@@ -255,12 +255,12 @@ list_val_t list_dequeue(list_t *list) {
  */
 list_val_t list_get(list_t list, size_t idx) {
   if (idx >= list.size) {
-    return NULL;
+    return nullptr;
   }
 
   node_pair_t nodes = traverse_to_idx(&list, idx);
   if (!nodes.prev || !nodes.curr) {
-    return NULL;
+    return nullptr;
   }
 
   return nodes.curr->value;
@@ -271,7 +271,7 @@ list_val_t list_get(list_t list, size_t idx) {
  *
  * @param list The stack/queue to peek at
  * @return list_val_t The item at the front of queue (or top of the stack) or
- *         NULL if empty
+ *         nullptr if empty
  */
 list_val_t list_peek(list_t list) {
   return list_get(list, 0);
@@ -286,13 +286,13 @@ list_val_t list_peek(list_t list) {
  * @param list The list to modify
  * @param idx The index to modify
  * @param value The new value to set
- * @return list_val_t The previous at the given index (or NULL if the index
+ * @return list_val_t The previous at the given index (or nullptr if the index
  *         is invalid)
  */
 list_val_t list_set(list_t *list, size_t idx, list_val_t value) {
   node_pair_t nodes = traverse_to_idx(list, idx);
   if (!nodes.curr) {
-    return NULL;
+    return nullptr;
   }
 
   list_val_t prior_value = nodes.curr->value;
@@ -362,7 +362,7 @@ void list_reverse(list_t *list) {
  * @return ssize_t The index of `value` or -1 if not found
  */
 ssize_t list_find(list_t list, list_val_t value) {
-  node_t *curr = list_next(list.head, NULL);
+  node_t *curr = list_next(list.head, nullptr);
   node_t *prev = list.head;
   size_t idx = 0;
 
@@ -394,7 +394,7 @@ ssize_t list_find(list_t list, list_val_t value) {
  */
 bool list_contains(list_t list, list_val_t value) {
   node_t *curr = list.head;
-  node_t *prev = NULL;
+  node_t *prev = nullptr;
 
   while (curr != list.tail) {
     node_t *next_node = list_next(curr, prev);
@@ -424,14 +424,14 @@ static node_t *calc_new_ptr(void *a, void *b, void *c) {
  * Returns the next item in the list after curr.
  */
 static node_t *list_next(node_t *curr, node_t *prev) {
-  return calc_new_ptr(prev, curr->link, NULL);
+  return calc_new_ptr(prev, curr->link, nullptr);
 }
 
 /**
  * Returns the previous item in the list before curr.
  */
 static node_t *list_prev(node_t *curr, node_t *next) {
-  return calc_new_ptr(NULL, curr->link, next);
+  return calc_new_ptr(nullptr, curr->link, next);
 }
 
 /**
@@ -447,7 +447,7 @@ static int add_at_node(list_t *list, list_val_t value, node_t *before, node_t *a
   new_node->value = value;
 
   /* Set the pointers to surrounding nodes. */
-  new_node->link = calc_new_ptr(before, NULL, after);
+  new_node->link = calc_new_ptr(before, nullptr, after);
   after->link = calc_new_ptr(before, new_node, after->link);
   before->link = calc_new_ptr(before->link, new_node, after);
 
@@ -468,7 +468,7 @@ static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
    * If the index isn't valid, don't bother searching at all.
    */
   if (idx > list->size) {
-    node_pair_t all_null = {.prev = NULL, .curr = NULL};
+    node_pair_t all_null = {.prev = nullptr, .curr = nullptr};
     return all_null;
   }
 
@@ -489,7 +489,7 @@ static node_pair_t traverse_to_idx(list_t *list, size_t idx) {
   }
 
   /* Start traversing from the end until the needed index. */
-  node_t *curr = list_next(starting_end, NULL);
+  node_t *curr = list_next(starting_end, nullptr);
   node_t *prev = starting_end;
 
   for (int i = 0; i < num_iter; i++) {

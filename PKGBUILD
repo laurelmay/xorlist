@@ -1,11 +1,11 @@
-# Maintainer: Kyle Laker <kyle@laker.email>
+# Maintainer: Laurel May <laurel@laurelmay.me>
 
 pkgname=xorlist
 pkgver=0.1.0
 pkgrel=1
 pkgdesc="Library for an xorlist"
 arch=("x86_64")
-url="https://github.com/kylelaker/xorlist"
+url="https://github.com/laurelmay/xorlist"
 license=(MIT)
 depends=()
 makedepends=(check subunit)

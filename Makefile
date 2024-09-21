@@ -1,6 +1,6 @@
 CC=clang
 
-override CFLAGS := -Wall -pedantic -std=c17 $(CFLAGS)
+override CFLAGS := -Wall -pedantic -std=c23 $(CFLAGS)
 override LDFLAGS := $(LDFLAGS)
 
 SRCDIR = src
